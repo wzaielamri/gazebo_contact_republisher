@@ -17,7 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
     message_generation
     geometry_msgs
 )
-
+find_package(gazebo_dev REQUIRED)
 include(FindBoost)
 find_package(Boost ${MIN_BOOST_VERSION} REQUIRED system filesystem regex)
 find_package(Protobuf REQUIRED)
