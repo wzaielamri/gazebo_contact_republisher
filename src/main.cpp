@@ -67,7 +67,6 @@ void forcesCb(ConstContactsPtr &_msg){
     }
     contacts_message.contacts = contacts_list;
     pub.publish(contacts_message);
-
 }
 
 
