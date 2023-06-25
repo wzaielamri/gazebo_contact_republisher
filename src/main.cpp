@@ -22,28 +22,33 @@ void forcesCb(ConstContactsPtr &_msg){
     // What to do when callback
     for (int i = 0; i < _msg->contact_size(); ++i) {
 
-        contact_republisher::contact_msg contact_message;
+        // publish only if digit is in contact name: save time
+        if (_msg->contact(i).collision1().find("left_digit") != std::string::npos ||
+            _msg->contact(i).collision2().find("left_digit") != std::string::npos) {
+            
+            contact_republisher::contact_msg contact_message;
 
-        contact_message.collision_1 = _msg->contact(i).collision1();
-        contact_message.collision_2 = _msg->contact(i).collision2();
+            contact_message.collision_1 = _msg->contact(i).collision1();
+            contact_message.collision_2 = _msg->contact(i).collision2();
 
-        contact_message.normal[0] = _msg->contact(i).normal().Get(0).x();
-        contact_message.normal[1] = _msg->contact(i).normal().Get(0).y();
-        contact_message.normal[2] = _msg->contact(i).normal().Get(0).z();
+            contact_message.normal[0] = _msg->contact(i).normal().Get(0).x();
+            contact_message.normal[1] = _msg->contact(i).normal().Get(0).y();
+            contact_message.normal[2] = _msg->contact(i).normal().Get(0).z();
 
-        contact_message.position[0] = _msg->contact(i).position().Get(0).x();
-        contact_message.position[1] = _msg->contact(i).position().Get(0).y();
-        contact_message.position[2] = _msg->contact(i).position().Get(0).z();
+            contact_message.position[0] = _msg->contact(i).position().Get(0).x();
+            contact_message.position[1] = _msg->contact(i).position().Get(0).y();
+            contact_message.position[2] = _msg->contact(i).position().Get(0).z();
 
-        contact_message.forces[0] = _msg->contact(i).wrench(0).body_1_wrench().force().x();
-        contact_message.forces[1] = _msg->contact(i).wrench(0).body_1_wrench().force().y();
-        contact_message.forces[2] = _msg->contact(i).wrench(0).body_1_wrench().force().z();
+            contact_message.forces[0] = _msg->contact(i).wrench(0).body_1_wrench().force().x();
+            contact_message.forces[1] = _msg->contact(i).wrench(0).body_1_wrench().force().y();
+            contact_message.forces[2] = _msg->contact(i).wrench(0).body_1_wrench().force().z();
 
-        contact_message.depth = _msg->contact(i).depth().Get(0);
+            contact_message.depth = _msg->contact(i).depth().Get(0);
 
-        contacts_list.push_back(contact_message);
+            contacts_list.push_back(contact_message);
+        }
     }
-    if ( _msg->contact_size()== 0){
+    if ( _msg->contact_size()== 0 || contacts_list.size() == 0){
         contact_republisher::contact_msg contact_message;
 
         contact_message.collision_1 = "default";
@@ -87,7 +92,6 @@ int main(int _argc, char **_argv){
     // Listen to Gazebo contacts topic
     gazebo::transport::SubscriberPtr sub = node->Subscribe("/gazebo/default/physics/contacts", forcesCb);
 
-    // Busy wait loop...replace with your own code as needed.
     // Busy wait loop...replace with your own code as needed.
     while (true)
     {
